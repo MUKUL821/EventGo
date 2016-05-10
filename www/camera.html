@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+    <!--meta http-equiv="Content-Security-Policy" content="img-src 'self' data:; default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+
+
+    <!-- Good default declaration:
+    * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+    * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+        * Enable inline JS: add 'unsafe-inline' to default-src
+        * Enable eval(): add 'unsafe-eval' to default-src
+    * Create ur own at http://cspisawesome.com
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" />
+
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>Hello World</title>
+    <script type='text/javascript' src='js/jquery-2.1.1.js'></script>
+	<script type='text/javascript' src='js/sample.js'></script> 
+
+    <script>
+
+    $(document).bind('mobileinit',function(){
+        $.mobile.changePage.defaults.changeHash = false;
+        $.mobile.hashListeningEnabled = false;
+        $.mobile.pushStateEnabled = false;
+    });
+
+    $(function(){
+        $("#search").click(function(){
+         navigator.camera.getPicture(onSuccess, onFail, { quality: 50 ,
+							  destinationType: Camera.DestinationType.NATIVE_URI,
+							  saveToPhotoAlbum: true });
+
+         function onSuccess(imageData) {
+                 var image = document.getElementById('myImage');
+	         image.style.display = 'block';
+                 image.src = imageData;
+                 console.log(imageData);
+                 //movePic(imageData);
+
+         }
+
+	function movePic(file)
+	{ 
+    		window.resolveLocalFileSystemURL(file, resolveOnSuccess, resOnError); 
+	} 
+        function resOnError(error) 
+	{
+    		alert(error.code);
+	}
+
+
+         function onFail(message) {
+                 alert('Failed because: ' + message);
+         }
+	function successMove(entry) 
+	{
+    		sessionStorage.setItem('imagepath', entry.fullPath);
+	}
+
+
+     function resolveOnSuccess(entry)
+     { 
+    	var d = new Date();
+    	var n = d.getTime();
+    	var newFileName = n + ".jpg";
+    	var myFolderApp = "MyAppFolder";
+    	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSys) 
+    	{      
+        	fileSys.root.getDirectory( myFolderApp,
+                {create:true, exclusive: false},
+                function(directory) 
+                {
+                    entry.moveTo(directory, newFileName,  successMove, resOnError);
+                },
+        	resOnError);
+    	},
+    	resOnError);
+     }
+ 
+         function onCopySuccess(entry) {
+               console.log(entry.fullPath)
+         }
+
+         function fail(error) {
+               console.log(error.message);
+         }
+
+
+     });
+     });
+    </script>
+
+</head>
+
+<body>
+    <div class="app">
+        <h1>PhoneGap</h1>
+        <div id="deviceready" class="blink">
+            <p class="event listening">Connecting to Device</p>
+            <p class="event received">Device is Ready</p>
+        </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+
+    <div  data-role="page" id="searchpage">
+       <div data-role="header">
+          <h1>Search page</h1>
+		  	<a href="#" style= "background: transparent;border: none; color:black;" class="ui-bottom-sheet-link ui-btn ui-btn-inline waves-effect waves-button waves-effect waves-button waves-effect waves-button" id="back-index">Back</a>
+
+       </div>
+
+       <div data-role="main" class="ui-content">
+         <p>This is Search Page.</p>
+         <br><br><br><br>
+
+         <form action="http://api.ocrapiservice.com/1.0/rest/ocr" method="POST" enctype="multipart/form-data">
+            <input type="button" value="Button" id="search">
+            <img src="" id="myImage" style="display:none;width:60px;height:60px;""/>
+            <br><br><br><br>
+
+            <input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
+                Choose a file to upload: <input name="image" type="file" />
+            <br />
+            <input type="text" name="language" value="en" />
+            <input type="text" name="apikey" value="NguUHTwuqr" />
+    
+            <input type="submit" id="decode" value="Upload File" />
+    </form>
+
+
+
+      </div>
+         <br><br><br><br>
+      <div data-role="footer">
+         <h1>Footer Text</h1>
+      </div>
+</div>
+    
+</body>
+
+</html>

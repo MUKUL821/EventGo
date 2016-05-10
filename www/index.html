@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>nativeDroid - Theme for jQuery Mobile - cards</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+			<!-- FontAwesome - http://fortawesome.github.io/Font-Awesome/ -->
+        <link rel="stylesheet" href="css/font-awesome.css" />
+
+		<!-- jQueryMobileCSS - original without styling -->
+		<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" />
+
+		<!-- nativeDroid core CSS -->
+		
+        <link rel="stylesheet" href="css/nativedroid2.css" />
+        <link rel="stylesheet" href="css/jquerymobile.nativedroid.css" />
+
+		<!-- nativeDroid: Light/Dark -->
+        <link rel="stylesheet" href="css/jquerymobile.nativedroid.dark.css"  id='jQMnDTheme' />
+
+		<!-- nativeDroid: Color Schemes -->
+        <link rel="stylesheet" href="css/nativedroid2.color.blue-grey.css" id='jQMnDColor' />
+ <link rel="stylesheet" href="css/material-design-iconic-font.css"/>
+
+		<!-- jQuery / jQueryMobile Scripts -->
+	<script type='text/javascript' src='js/jquery-2.1.1.js'></script> 
+	
+
+<script>
+    $(document).bind('mobileinit',function(){
+        $.mobile.changePage.defaults.changeHash = false;
+        $.mobile.hashListeningEnabled = false;
+        $.mobile.pushStateEnabled = false;
+    });
+	$(function(){
+	$(".cards").click(function(){
+	  window.location.href = "MapList.html";
+	});
+
+	});
+</script>	
+<style>
+.ui-panel-inner > .ui-listview > .ui-li-divider {
+    background-color: transparent;
+    color: white;
+    font-weight: 400;
+    font-size: 25px;
+    line-height: 1.4em;
+    /* font-weight: 500; */
+}
+.cards{     background-color:#E8EEEF !important;
+
+    color: #562F4A; height: 70px;}
+
+</style>	
+
+	<script type='text/javascript' src='js/jquery.mobile-1.4.5.js'></script> 
+
+		<!-- Extras for: Cards.html -->
+	    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+        
+
+    </head>
+    <body>
+
+	<div id='map-canvas'></div>
+        
+    <div data-role="page" data-theme='b'>
+
+
+           <div data-role="header" data-position="fixed" class="wow fadeIn ui-header ui-bar-inherit ui-header-fixed slidedown" role="banner" style="visibility: visible; animation-name: fadeIn;">
+			</div>
+ <div data-role="content">   
+
+			
+			<ul data-nativedroid-plugin='cards'>
+				<li class="cards one" data-cards-type='text'>
+					<h1>Near Me</h1>
+				</li>
+				<li class="cards two" data-cards-type='text'>
+					<h1>TweetFeed Live</h1>
+				</li>
+				
+				<li class="cards three" data-cards-type='text'>
+					<h1>In my city</h1>
+					</li>
+				<li class="cards four" data-cards-type='text'>
+					<h1>My Events</h1>
+					</li>
+				<li class="cards five" data-cards-type='text'>
+					<h1>Interest</h1>
+					</li>
+				<li class="cards six"  data-cards-type='text'>
+					<h1>Free Events</h1>
+				</li>
+			</ul>
+
+	        
+        </div>
+
+    </div>
+    
+    <script src="js/nativedroid.script.js"></script>
+    </body>
+</html>
