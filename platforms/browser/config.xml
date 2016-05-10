@@ -15,7 +15,7 @@
     </author>
     <content src="index.html" />
     <icon src="icon.png" />
-    <gap:plugin name="com.adobe.plugins.pushplugin" />
+    <gap:plugin name="com.adobe.plugins.pushplugin" version="1.3.7" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
