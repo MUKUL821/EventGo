@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+  <title>Google Maps Multiple Markers</title> 
+  <script src="http://maps.google.com/maps/api/js?sensor=false" 
+          type="text/javascript"></script>
+		    <link rel="stylesheet" href="css/font-awesome.css" />
+
+		<!-- jQueryMobileCSS - original without styling -->
+		<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" />
+
+		<!-- nativeDroid core CSS -->
+		
+        <link rel="stylesheet" href="css/nativedroid2.css" />
+        <link rel="stylesheet" href="css/jquerymobile.nativedroid.css" />
+
+		<!-- nativeDroid: Light/Dark -->
+        <link rel="stylesheet" href="css/jquerymobile.nativedroid.dark.css"  id='jQMnDTheme' />
+
+		<!-- nativeDroid: Color Schemes -->
+        <link rel="stylesheet" href="css/nativedroid2.color.blue-grey.css" id='jQMnDColor' />
+ <link rel="stylesheet" href="css/material-design-iconic-font.css"/>
+
+		<!-- jQuery / jQueryMobile Scripts -->
+	<script type='text/javascript' src='js/jquery-2.1.1.js'></script> 
+	
+
+</head> 
+<body>
+  <div id="map" style="width: 2000px; height: 2400px;"></div>
+
+  <script type="text/javascript">
+   
+var locations = [{"agree":true,"clientID":"6","latitude":4.0,"longitude":4.0,"contactInfo":"abc","eventID":"101"},{"agree":true,"clientID":"5","latitude":4.001,"longitude":4.001,"contactInfo":"abc","eventID":"101"},{"agree":true,"clientID":"4","latitude":4.0,"longitude":4.0,"contactInfo":"abc","eventID":"101"},{"agree":true,"clientID":"1","latitude":3.999,"longitude":3.999,"contactInfo":"abc","eventID":"101"},{"agree":true,"clientID":"1","latitude":3.999,"longitude":3.999,"contactInfo":"abc","eventID":"101"}];
+  
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 105,
+      center: new google.maps.LatLng(4.0, 4.0),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+
+    for (i = 0; i < locations.length; i++) {  
+	 console.log("locations[i].longitude, locations[i].latitude",locations[i].longitude, locations[i].latitude);
+
+      marker = new google.maps.Marker({
+	   position: new google.maps.LatLng(locations[i].longitude, locations[i].latitude),
+        map: map
+      });
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(locations[i].eventID);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    }
+  </script>
+</body>
+</html>

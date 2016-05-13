@@ -1,174 +1,245 @@
 <!DOCTYPE html>
-<!--
-    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
 
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
 
 <head>
     <meta charset="utf-8" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
-    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
-    <!--meta http-equiv="Content-Security-Policy" content="img-src 'self' data:; default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+    <title>EventGo</title>
+<script type='text/javascript' src='js/jquery-2.1.1.js'></script> 
 
-
-    <!-- Good default declaration:
-    * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-    * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-        * Enable inline JS: add 'unsafe-inline' to default-src
-        * Enable eval(): add 'unsafe-eval' to default-src
-    * Create ur own at http://cspisawesome.com
-    -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" />
-
-    <link rel="stylesheet" type="text/css" href="css/index.css" />
-    <title>Hello World</title>
-    <script type='text/javascript' src='js/jquery-2.1.1.js'></script>
-	<script type='text/javascript' src='js/sample.js'></script> 
-
-    <script>
-
+<script>
     $(document).bind('mobileinit',function(){
         $.mobile.changePage.defaults.changeHash = false;
         $.mobile.hashListeningEnabled = false;
         $.mobile.pushStateEnabled = false;
     });
+</script>		
 
-    $(function(){
-        $("#search").click(function(){
-         navigator.camera.getPicture(onSuccess, onFail, { quality: 50 ,
-							  destinationType: Camera.DestinationType.NATIVE_URI,
-							  saveToPhotoAlbum: true });
+	<script type='text/javascript' src='js/jquery.mobile-1.4.5.js'></script> 
+	
 
-         function onSuccess(imageData) {
-                 var image = document.getElementById('myImage');
-	         image.style.display = 'block';
-                 image.src = imageData;
-                 console.log(imageData);
-                 //movePic(imageData);
+<link rel="stylesheet" href="css/material-design-iconic-font.css">	
+				<link rel="stylesheet" href="css/font-awesome.css">	
+				<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css">
+				<link rel="stylesheet" href="css/nativedroid2.css">
+					<script type='text/javascript' src='js/nativedroid2.js'></script>
+					
+					<link rel="stylesheet" href="css/jquerymobile.nativedroid.dark.css">
+					<link rel="stylesheet" href="css/nativedroid2.color.blue-grey.css">
+							<link rel="stylesheet" href="css/nativedroid2.color.blue-grey.css">
+						<script type='text/javascript' src='js/sample.js'></script> 
+						<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 
-         }
+						
+					
+			
+   <script src="js/ocrad.js"></script>
+    <script>
 
-	function movePic(file)
-	{ 
-    		window.resolveLocalFileSystemURL(file, resolveOnSuccess, resOnError); 
-	} 
-        function resOnError(error) 
-	{
-    		alert(error.code);
-	}
+  
+
+    //Neha added script
+    function recognize_image(){
+                document.getElementById('transcription').innerText = "(Recognizing...)"
+
+                OCRAD(document.getElementById("pic"), {
+                    numeric: true
+                }, function(text){
+                    
+                })
+            }
+            function load_file () {
+                var reader = new FileReader();
+                reader.onload = function(){
+                    var img = new Image();
+                    img.src = reader.result;
+                    img.onload = function(){
+                        document.getElementById('nose').innerHTML = ''
+                        document.getElementById('nose').appendChild(img)
+                        OCRAD(img, function(text){
+                            document.getElementById('transcription').className = "done"
+                            document.getElementById('transcription').innerText = text;
+                            text = text.replace(/[^a-zA-Z0-9\s]/g, '');
+                            text = text.replace(/\n|\r/g," ");
+                            text = text.replace(/ +/g, ' ');
+                            searchWithAjax(text)
+                            alert(text);        
+
+                        })
+                    }
+                }
+                reader.readAsDataURL(document.getElementById('picker').files[0])
+            }
+
+            function searchWithAjax(text){
+                alert("in ajax method")
+            $.ajax({
+            url: 'http://localhost:8080/mserve/rs/store/search/'+ encodeURIComponent(text),
+            dataType: 'jsonp',
+            type: 'GET',
+            jsonpCallback : "callbackMethod",
+            success: function(data) {
+                alert("In success")
+            alert(data)
+            //called when successful
+            $('#transcription').html(data);
+            },
+              error: function(e) {
+            alert("In error");
+                //called when there is an error
+                //console.log(e.message);
+              }
+            });
+
+        }
 
 
-         function onFail(message) {
-                 alert('Failed because: ' + message);
-         }
-	function successMove(entry) 
-	{
-    		sessionStorage.setItem('imagepath', entry.fullPath);
-	}
-
-
-     function resolveOnSuccess(entry)
-     { 
-    	var d = new Date();
-    	var n = d.getTime();
-    	var newFileName = n + ".jpg";
-    	var myFolderApp = "MyAppFolder";
-    	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSys) 
-    	{      
-        	fileSys.root.getDirectory( myFolderApp,
-                {create:true, exclusive: false},
-                function(directory) 
-                {
-                    entry.moveTo(directory, newFileName,  successMove, resOnError);
-                },
-        	resOnError);
-    	},
-    	resOnError);
-     }
- 
-         function onCopySuccess(entry) {
-               console.log(entry.fullPath)
-         }
-
-         function fail(error) {
-               console.log(error.message);
-         }
-
-
-     });
-     });
+    //Neha script ends
+        
+	 
     </script>
-
 </head>
 
-<body>
-    <div class="app">
-        <h1>PhoneGap</h1>
-        <div id="deviceready" class="blink">
-            <p class="event listening">Connecting to Device</p>
-            <p class="event received">Device is Ready</p>
-        </div>
-    </div>
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript">
-        app.initialize();
-    </script>
 
-    <div  data-role="page" id="searchpage">
-       <div data-role="header">
-          <h1>Search page</h1>
-		  	<a href="#" style= "background: transparent;border: none; color:black;" class="ui-bottom-sheet-link ui-btn ui-btn-inline waves-effect waves-button waves-effect waves-button waves-effect waves-button" id="back-index">Back</a>
-
-       </div>
-
-       <div data-role="main" class="ui-content">
-         <p>This is Search Page.</p>
-         <br><br><br><br>
-
-         <form action="http://api.ocrapiservice.com/1.0/rest/ocr" method="POST" enctype="multipart/form-data">
-            <input type="button" value="Button" id="search">
-            <img src="" id="myImage" style="display:none;width:60px;height:60px;""/>
-            <br><br><br><br>
-
-            <input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
-                Choose a file to upload: <input name="image" type="file" />
-            <br />
-            <input type="text" name="language" value="en" />
-            <input type="text" name="apikey" value="NguUHTwuqr" />
-    
-            <input type="submit" id="decode" value="Upload File" />
-    </form>
+<body class="ui-overlay-a">
+        
+    <div data-role="page" data-theme="a" class="ui-page ui-page-theme-b ui-page-header-fixed ui-page-footer-fixed ui-page-active" id="searchpage">
 
 
+			<div data-role="header" data-position="fixed" class="wow fadeIn ui-header ui-bar-b ui-header-fixed slidedown" data-tap-toggle="false" data-theme="b" role="banner">
+				<a href="#leftpanel" class="ui-btn ui-btn-left"><i class="zmdi zmdi-menu"></i></a>
+				<h1 class="wow fadeIn" data-wow-delay='0.4s'>Events</h1>
+			
+<a href="#bottomsheet" class="ui-btn-right wow fadeIn ui-btn waves-effect waves-button  waves-effect waves-button waves-effect waves-button" data-wow-delay="1.2s" data-role="button" role="button" style="display:none; animation-delay: 1.2s; animation-name: fadeIn;"><i class="zmdi zmdi-more-vert"></i></a>
+			
+			</div>
+        
+        <div data-role="content" class="ui-content" role="main">   
+		   <p>This is Search Page.</p>
+         <input type="file" onchange="load_file()" id="picker" style="background-color:white">     
+        <div id="main">
+            <div id="nose">
+                <p>No file loaded</p>
+                
+            </div>
+            <div id="transcription"></div>
+      </div>	
+		</div>
+		 <div data-role="panel" id="leftpanel" data-display="overlay" style="background-color: rgb(34, 66, 200);z-index: 999999999999999;" data-position-fixed="true" class="ui-panel ui-panel-position-left ui-panel-display-overlay ui-body-inherit ui-panel-fixed ui-panel-animate ui-panel-open">
 
-      </div>
-         <br><br><br><br>
-      <div data-role="footer">
-         <h1>Footer Text</h1>
-      </div>
+				<div class="ui-panel-inner"><div class="nd2-sidepanel-profile wow fadeInDown" style="visibility: visible; animation-name: fadeInDown;">
+					<img class="profile-background" src="img/profile.jpg">
+					<div class="row">
+						<div class="col-xs-4 center-xs">
+							<div class="box">
+								<img class="profile-thumbnail"style="width: 45px;" src="img/profile-pic.jpg">
+							</div>
+						</div>
+						<div class="col-xs-8">
+							
+						</div>
+					</div>
+				</div>	<ul data-role="listview" data-inset="false" class="ui-listview">
+					<li data-role="list-divider" role="heading" class="ui-li-divider ui-bar-inherit ui-first-child ui-last-child" id="myevents">My Events</li>
+							<li data-role="list-divider" role="heading" class="ui-li-divider ui-bar-inherit ui-first-child ui-last-child" id="todo">
+<a href="todo.html" >To-Do List</a></li>
+							<li data-role="list-divider" role="heading" class="ui-li-divider ui-bar-inherit ui-first-child ui-last-child">Search History</li>
+		<li data-role="list-divider" role="heading" class="ui-li-divider ui-bar-inherit ui-first-child ui-last-child">Settings</li>
+		<li data-role="list-divider" role="heading" class="ui-li-divider ui-bar-inherit ui-first-child ui-last-child" id="aboutus"><a href="aboutus.html">About Us</a></li>
+				
+				</ul>
+				</div></div>
+
+<div data-role="panel" style="background-color: rgb(50, 169, 226);color: #ffffff;" id="bottomsheet" data-animate="false" data-position="bottom" data-display="overlay" class="ui-panel ui-panel-position-bottom ui-body-inherit ui-panel-one ui-panel-display-overlay ui-panel-open">
+				
+
+	<div class="col-xs-auto">
+	<a href="#popupDialog1" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" aria-haspopup="true" aria-owns="popupDialog" aria-expanded="true" style= "background: transparent;border: none;" class="ui-link ui-bottom-sheet-link ui-btn ui-btn-inline waves-effect waves-button" ><i class="zmdi zmdi-fire zmd-2x"></i><strong>Live Tweets</strong></a>
+	</div>
+
+	<div class="col-xs-auto" style="float:right;">
+		<a href="#" style= "background: transparent;border: none;" class="ui-bottom-sheet-link ui-btn ui-btn-inline waves-effect waves-button waves-effect waves-button waves-effect waves-button" id="capture"><i class="zmdi  zmdi-camera-add zmd-2x"></i><strong>Capture</strong></a>
+	</div>
+	
 </div>
-    
-</body>
+ <div data-role="popup" id="carpoolDialog" class="ui-popup ui-body-inherit ui-overlay-shadow ui-corner-all">
 
+                <div data-role="header" role="banner" class="ui-header ui-bar-inherit">
+                	Your current location is shared. 
+            	</div>
+
+                <div data-role="content" class="ui-content" role="main">
+          <input type="submit" value="Ok" id="ok">
+                </div>
+            </div>
+ <div data-role="popup" id="popupDialog" class="ui-popup ui-body-inherit ui-overlay-shadow ui-corner-all">
+
+                <div data-role="header" role="banner" class="ui-header ui-bar-inherit">
+                	
+            	</div>
+
+                <div data-role="content" class="ui-content" role="main">
+                      <form id="form1" name="form1">
+		      <div data-role="fieldcontain">
+                   <input type="text"  name="startDate" id="startDate" data-inline="true" data-role="date" placeholder="Start Date" value="" >
+                    <div id="map_canvas"> </div>
+                </div>
+				 <div data-role="fieldcontain">
+                   <input type="text"  name="endDate" id="endDate" data-inline="true" data-role="date" placeholder="End Date" value="" >
+                    <div id="map_canvas"> </div>
+                </div>  
+          <p1>Range (miles) from current location</p1>
+          <input type="range" name="distanceR" id="distanceR" data-highlight="true" min="0" max="100" value="1" class="range">
+        <div style="display: block;position: relative;height: 40px;">
+              <label><input type="checkbox" name="checkFree" id="checkFree">Free</label>
+         
+              <label><input type="checkbox" name="checkPaid" id="CheckPaid">Paid</label>
+     </div>
+             <input type="submit" value="Ok" id="saveData">
+          
+          </form> 
+                </div>
+            </div>
+			 <div data-role="popup" id="popupDialog1" class="ui-popup ui-body-inherit ui-overlay-shadow ui-corner-all">
+
+                <div data-role="header" role="banner" class="ui-header ui-bar-inherit">
+                	
+            	</div>
+
+                <div data-role="content" class="ui-content" role="main">
+		  	<div id="tweet-list">
+					</div>
+                </div>
+            </div>
+
+</div>
+
+  <style>
+.ui-link.ui-btn{padding: 20px;}
+.col-xs-auto{  width: 24%;
+    height: 88px;
+    float: left;
+    /* text-align: center; */
+    padding: 0px 86px;
+}
+#popupDialog1{
+min-height: 200px;
+    min-width: 200px;
+    background: #ccc;}
+	.going .fa-check{display:none;}
+.going-confirm{background-color:blue!important;}
+.search-event button , .search-event input{color:text; background:blue;}
+.go{   
+    float: left !important;
+    margin-top: -21px !important;
+    width: 65px !important;
+    background-color: rgb(50, 169, 226);
+    height: 33px !important;
+    color: white !important;
+    margin-top: -16px !important;}
+</style>
+  
+  </body>
 </html>
